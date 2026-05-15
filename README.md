@@ -2,7 +2,28 @@
 
 Landing page for Gayatria — a home healthcare service. Built as a single-page React app, served as a static bundle from nginx, deployed on Google Cloud Run.
 
-**Live:** https://gayatria-react-981984388647.us-central1.run.app
+> **Note:** This repo exists to showcase the landing page. It is not a complete product — the search bar, Login/Sign up, and Explore/Chat with Expert CTAs are placeholders that don't route or call a backend. The deployment pipeline and frontend are real and functional; the application behavior behind those interactions is not.
+
+## Live deployment
+
+| | |
+| --- | --- |
+| Live URL | https://gayatria-react-981984388647.us-central1.run.app |
+| GCP project | `omnom-ra` |
+| Cloud Run region | `us-central1` |
+| Service | `gayatria-react` |
+| Cloud Run console | https://console.cloud.google.com/run/detail/us-central1/gayatria-react/metrics?project=omnom-ra |
+| Cloud Build history | https://console.cloud.google.com/cloud-build/builds?project=omnom-ra |
+| Artifact Registry image | `us-central1-docker.pkg.dev/omnom-ra/cloud-run-source-deploy/gayatria-react` |
+
+Quick checks from a terminal:
+
+```sh
+gcloud run services describe gayatria-react --region=us-central1 \
+  --format="value(status.url,status.latestReadyRevisionName)"
+
+gcloud run revisions list --service=gayatria-react --region=us-central1 --limit=5
+```
 
 ## Stack
 
