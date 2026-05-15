@@ -1,0 +1,28 @@
+server {
+  listen ${PORT};
+  server_name _;
+  root /usr/share/nginx/html;
+  index index.html;
+
+  # Hashed Vite assets are immutable — cache aggressively.
+  location /assets/ {
+    expires 1y;
+    add_header Cache-Control "public, immutable";
+    try_files $uri =404;
+  }
+
+  # index.html must not be cached so new deploys are picked up immediately.
+  location = /index.html {
+    add_header Cache-Control "no-cache, no-store, must-revalidate";
+  }
+
+  # SPA fallback: any unknown path serves index.html so client-side routing works.
+  location / {
+    try_files $uri $uri/ /index.html;
+  }
+
+  # gzip is on by default in nginx:alpine, but be explicit for served content.
+  gzip on;
+  gzip_types text/plain text/css application/javascript application/json image/svg+xml font/woff2;
+  gzip_min_length 1024;
+}

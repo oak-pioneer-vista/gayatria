@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 380 100" role="img" aria-label="Gayatria">
+  <title>Gayatria</title>
+  <desc>Gayatria — diya mark and wordmark for eldercare residence.</desc>
+
+  <g transform="translate(45, 45)">
+    <path d="M 0 -20 C -7 -8 -15 -3 -15 8 C -15 18 -8 23 0 23 C 8 23 15 18 15 8 C 15 -3 7 -5 0 -20 Z" fill="#7CA982"/>
+    <ellipse cx="0" cy="28" rx="17" ry="4" fill="#5C8366"/>
+  </g>
+
+  <text x="88" y="63" font-family="'Optima', 'Optima Nova', 'Gill Sans', 'Gill Sans MT', 'Albertus', 'Trajan Pro', serif" font-size="32" font-weight="400" fill="#5C8366" letter-spacing="8">GAYATRIA</text>
+</svg>

@@ -1,0 +1,58 @@
+# Cloud Build pipeline: build the Docker image, push to Artifact Registry,
+# and deploy to Cloud Run. Works both from a manual `gcloud builds submit`
+# and from a GitHub/Cloud Source Repos trigger.
+#
+# Prereqs (one-time):
+#   1. Enable APIs: cloudbuild, run, artifactregistry.
+#   2. Create the Artifact Registry repo (or change _REPOSITORY below):
+#        gcloud artifacts repositories create cloud-run-source-deploy \
+#          --repository-format=docker --location=$_REGION
+#   3. Grant the Cloud Build service account these roles on the project:
+#        roles/run.admin
+#        roles/artifactregistry.writer
+#        roles/iam.serviceAccountUser   (to deploy as the Cloud Run runtime SA)
+
+substitutions:
+  _REGION: us-central1
+  _REPOSITORY: cloud-run-source-deploy
+  _SERVICE: gayatria-react
+
+# $BUILD_ID is always set; $COMMIT_SHA is only set when triggered from a repo.
+# Using $BUILD_ID keeps every image uniquely tagged whether triggered or manual.
+steps:
+  - id: build
+    name: gcr.io/cloud-builders/docker
+    args:
+      - build
+      - --tag=${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY}/${_SERVICE}:$BUILD_ID
+      - --tag=${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY}/${_SERVICE}:latest
+      - .
+
+  - id: push
+    name: gcr.io/cloud-builders/docker
+    args:
+      - push
+      - --all-tags
+      - ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY}/${_SERVICE}
+
+  - id: deploy
+    name: gcr.io/google.com/cloudsdktool/cloud-sdk
+    entrypoint: gcloud
+    args:
+      - run
+      - deploy
+      - ${_SERVICE}
+      - --image=${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY}/${_SERVICE}:$BUILD_ID
+      - --region=${_REGION}
+      - --platform=managed
+      - --allow-unauthenticated
+      - --port=8080
+
+# Tracked in the build's "Images" tab for traceability.
+images:
+  - ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY}/${_SERVICE}:$BUILD_ID
+  - ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY}/${_SERVICE}:latest
+
+options:
+  logging: CLOUD_LOGGING_ONLY
+  machineType: E2_HIGHCPU_8
